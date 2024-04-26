@@ -22,8 +22,15 @@ import com.miso.appvinilos.albums.ui.theme.AppVinilosTheme
 import com.miso.appvinilos.albums.viewmodels.AlbumViewModel
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.miso.appvinilos.albums.ui.screens.HomeScreen
 import com.miso.appvinilos.ui.navigation.BottomNavItem
+import com.miso.appvinilos.ui.navigation.BottomNavigation
 
 
 class MainActivity : ComponentActivity() {
@@ -43,22 +50,43 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val navController = rememberNavController()
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController) }
-    ) {
-        NavigationGraph(navController = navController)
+        bottomBar = { BottomNavigationBar(navController) }
+    ) { innerPadding ->
+        NavHost(navController, startDestination = "home") {
+            composable("home") { HomeScreen() }
+            composable("albums") { AlbumsScreen() }
+
+        }
     }
 }
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
-        BottomNavItem.Home,
-        BottomNavItem.Albums,
-        BottomNavItem.Artists,
-        BottomNavItem.Collectors
+        BottomNavItem("Home", Icons.Default.Home, "home"),
+        BottomNavItem("Albums", Icons.Default.Album, "albums"),
+        // Agrega aquí más elementos según necesites
     )
+
     BottomNavigation {
-        // Implementación de BottomNavigation
+        val currentRoute = currentRoute(navController)
+        items.forEach { item ->
+            BottomNavigationItem(
+                icon = { Icon(item.icon, contentDescription = item.title) },
+                label = { Text(item.title) },
+                selected = currentRoute == item.route,
+                onClick = {
+                    navController.navigate(item.route) {
+                        // Cuando se hace click, navegar a la ruta especificada
+                        navController.graph.startDestinationRoute?.let { route ->
+                            popUpTo(route) { saveState = true }
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -67,18 +95,10 @@ fun NavigationGraph(navController: NavController) {
     NavHost(navController, startDestination = BottomNavItem.Home.route) {
         composable(BottomNavItem.Home.route) { HomeScreen() }
         composable(BottomNavItem.Albums.route) { AlbumsScreen() }
-        composable(BottomNavItem.Artists.route) { ArtistsScreen() }
-        composable(BottomNavItem.Collectors.route) { CollectorsScreen() }
+
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
 @Composable
 fun AlbumScreen(viewModel: AlbumViewModel) {
@@ -102,17 +122,9 @@ fun AlbumScreen(viewModel: AlbumViewModel) {
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AppVinilosTheme {
-        Greeting("Android")
-    }
-}
-
 
 @Composable
-fun AlbumListScreen() {
+fun AlbumsScreen() {
     val viewModel: AlbumViewModel = viewModel()
     LaunchedEffect(key1 = true) {
         viewModel.fetchAlbums()
@@ -120,3 +132,12 @@ fun AlbumListScreen() {
     Log.d("AlbumListScreen", "Loading albums from ViewModel")
     AlbumList(viewModel)
 }
+
+@Composable
+fun currentRoute(navController: NavController): String? {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    return navBackStackEntry?.destination?.route
+}
+
+data class BottomNavItem(val title: String, val icon: ImageVector, val route: String)
+
