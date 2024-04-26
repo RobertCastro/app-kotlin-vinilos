@@ -1,29 +1,33 @@
 package com.miso.appvinilos
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.miso.appvinilos.albums.ui.views.AlbumList
 import com.miso.appvinilos.albums.ui.theme.AppVinilosTheme
+import com.miso.appvinilos.albums.ui.views.AlbumList
 import com.miso.appvinilos.albums.viewmodels.AlbumViewModel
-import android.util.Log
-import androidx.activity.viewModels
-import androidx.navigation.NavController
-import com.miso.appvinilos.albums.ui.screens.HomeScreen
-import com.miso.appvinilos.ui.navigation.BottomNavItem
-import com.miso.appvinilos.ui.navigation.BottomNavigation
 
 
 class MainActivity : ComponentActivity() {
@@ -32,7 +36,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppVinilosTheme {
-                MainScreen()
+                AlbumListScreen()
             }
         }
     }
@@ -43,32 +47,37 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val navController = rememberNavController()
     Scaffold(
-        bottomBar = {
-            BottomNavigation(navController, items = listOf(
-                BottomNavItem.Home,
-                BottomNavItem.Albums
-                // ... añade más ítems aquí ...
-            ))
+        topBar = {
+            SmallTopAppBar(
+                title = { Text("Vinilos App") },
+                actions = {
+                    Text(
+                        text = "Ver Álbumes",
+                        modifier = Modifier
+                            .padding(horizontal = 1.dp)
+                            .clickable(onClick = { navController.navigate("albumList") }),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            )
         }
     ) { innerPadding ->
-        NavHost(navController, startDestination = BottomNavItem.Home.route) {
-            composable(BottomNavItem.Home.route) { /* Tu pantalla de inicio */ }
-            composable(BottomNavItem.Albums.route) { /* Tu pantalla de álbumes */ }
-            // ... más composables aquí ...
+        NavHost(navController, startDestination = "home", Modifier.padding(innerPadding)) {
+            composable("home") { Greeting("Welcome to Vinilos App") }
+            composable("albumList") { AlbumListScreen() }
         }
     }
 }
 
-
 @Composable
-fun NavigationGraph(navController: NavController) {
-    NavHost(navController, startDestination = BottomNavItem.Home.route) {
-        composable(BottomNavItem.Home.route) { HomeScreen() }
-        composable(BottomNavItem.Albums.route) { AlbumsScreen() }
-
-    }
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
 }
-
 
 @Composable
 fun AlbumScreen(viewModel: AlbumViewModel) {
@@ -92,9 +101,17 @@ fun AlbumScreen(viewModel: AlbumViewModel) {
 
 }
 
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    AppVinilosTheme {
+        Greeting("Android")
+    }
+}
+
 
 @Composable
-fun AlbumsScreen() {
+fun AlbumListScreen() {
     val viewModel: AlbumViewModel = viewModel()
     LaunchedEffect(key1 = true) {
         viewModel.fetchAlbums()
@@ -103,3 +120,20 @@ fun AlbumsScreen() {
     AlbumList(viewModel)
 }
 
+@Composable
+fun AlbumTitlesScreen() {
+    val viewModel: AlbumViewModel = viewModel()
+    val albums by viewModel.albums.observeAsState(initial = listOf())
+
+    // Se asegura de cargar los datos cuando el composable es llamado
+    LaunchedEffect(key1 = true) {
+        viewModel.fetchAlbums()
+    }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = "Álbumes Disponibles:")
+        albums.forEach { album ->
+            Text(text = album.name)
+        }
+    }
+}
