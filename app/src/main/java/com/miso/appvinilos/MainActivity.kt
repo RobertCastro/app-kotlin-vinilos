@@ -1,6 +1,5 @@
 package com.miso.appvinilos
 
-import BottomNavigation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,10 +20,7 @@ import com.miso.appvinilos.albums.ui.theme.AppVinilosTheme
 import com.miso.appvinilos.albums.viewmodels.AlbumViewModel
 import android.util.Log
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.miso.appvinilos.albums.ui.screens.HomeScreen
 import com.miso.appvinilos.ui.navigation.BottomNavItem
 import com.miso.appvinilos.ui.navigation.BottomNavigation
@@ -48,12 +43,18 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val navController = rememberNavController()
     Scaffold(
-        bottomBar = { BottomNavigation(navController) }
+        bottomBar = {
+            BottomNavigation(navController, items = listOf(
+                BottomNavItem.Home,
+                BottomNavItem.Albums
+                // ... añade más ítems aquí ...
+            ))
+        }
     ) { innerPadding ->
-        NavHost(navController, startDestination = "home", Modifier.padding(innerPadding)) {
-            composable("home") { HomeScreen() }
-            composable("albums") { AlbumsScreen() }
-            // Configura las rutas adicionales aquí
+        NavHost(navController, startDestination = BottomNavItem.Home.route) {
+            composable(BottomNavItem.Home.route) { /* Tu pantalla de inicio */ }
+            composable(BottomNavItem.Albums.route) { /* Tu pantalla de álbumes */ }
+            // ... más composables aquí ...
         }
     }
 }
@@ -101,12 +102,4 @@ fun AlbumsScreen() {
     Log.d("AlbumListScreen", "Loading albums from ViewModel")
     AlbumList(viewModel)
 }
-
-@Composable
-fun currentRoute(navController: NavController): String? {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    return navBackStackEntry?.destination?.route
-}
-
-data class BottomNavItem(val title: String, val icon: ImageVector, val route: String)
 
