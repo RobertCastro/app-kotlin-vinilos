@@ -54,7 +54,7 @@ fun MainScreen() {
                     Text(
                         text = "Ver Álbumes",
                         modifier = Modifier
-                            .padding(horizontal = 8.dp)
+                            .padding(horizontal = 1.dp)
                             .clickable(onClick = { navController.navigate("albumList") }),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -113,6 +113,27 @@ fun GreetingPreview() {
 @Composable
 fun AlbumListScreen() {
     val viewModel: AlbumViewModel = viewModel()
-    Log.d("AlbumListScreen", "Fetched albums: $viewModel")
+    LaunchedEffect(key1 = true) {
+        viewModel.fetchAlbums()
+    }
+    Log.d("AlbumListScreen", "Loading albums from ViewModel")
     AlbumList(viewModel)
+}
+
+@Composable
+fun AlbumTitlesScreen() {
+    val viewModel: AlbumViewModel = viewModel()
+    val albums by viewModel.albums.observeAsState(initial = listOf())
+
+    // Se asegura de cargar los datos cuando el composable es llamado
+    LaunchedEffect(key1 = true) {
+        viewModel.fetchAlbums()
+    }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = "Álbumes Disponibles:")
+        albums.forEach { album ->
+            Text(text = album.name)
+        }
+    }
 }

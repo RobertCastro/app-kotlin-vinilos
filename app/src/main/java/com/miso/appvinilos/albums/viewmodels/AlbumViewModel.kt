@@ -22,8 +22,8 @@ class AlbumViewModel(application: Application) :  AndroidViewModel(application) 
         viewModelScope.launch {
             try {
                 val albums = albumRepository.getAlbums()
-                Log.d("fetchAlbums", "fetchAlbums: $albums")
-
+                //Log.d("fetchAlbums", "fetchAlbums: $albums")
+                Log.d("AlbumViewModel", "Fetched albums: ${albums.joinToString { it.name }}")
                 _albums.value = albums
             } catch (e: Exception) {
                 // Handle error
