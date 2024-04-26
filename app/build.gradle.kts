@@ -89,7 +89,7 @@ dependencies {
     implementation ("androidx.compose.material3:material3:1.0.0-alpha01")
     implementation ("androidx.compose.ui:ui-tooling-preview:1.0.0")
     implementation ("androidx.navigation:navigation-compose:2.4.0-beta02")
-
     implementation("androidx.compose.material3:material3:1.0.0-alpha01")
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha10")
+    implementation("io.coil-kt:coil-compose:2.6.0")
 }
