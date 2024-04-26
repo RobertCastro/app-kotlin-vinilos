@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -104,8 +105,10 @@ fun GreetingPreview() {
     }
 }
 
+
 @Composable
-fun AlbumListScreen(viewModel: AlbumViewModel = viewModel()) {
-    // Asumiendo que tienes un ViewModel listo con datos de álbumes
-    AlbumList(viewModel = viewModel)
+fun AlbumListScreen() {
+    val viewModel = viewModel<AlbumViewModel>()
+    // Assuming you have a ViewModel ready with albums data
+    AlbumList(viewModel)  // Here the instance of the viewModel is passed directly
 }
