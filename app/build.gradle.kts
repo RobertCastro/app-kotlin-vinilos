@@ -79,4 +79,11 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1")
     implementation("androidx.navigation:navigation-fragment-ktx:2.3.5")
     implementation("androidx.navigation:navigation-ui-ktx:2.3.5")
+    implementation("com.github.skydoves:landscapist-glide:<latest_version>")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:<version>")
+    implementation("com.github.skydoves:landscapist-glide:2.3.3")
+    implementation("androidx.compose.runtime:runtime-livedata:<version>")
+    // Si estás usando StateFlow, también necesitarás:
+    implementation("androidx.compose.runtime:runtime-rxjava2:<version>")
+    // Asegúrate de usar las versiones correctas que sean compatibles con tu versión de Compose
 }
