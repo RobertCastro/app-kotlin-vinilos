@@ -1,5 +1,6 @@
 package com.miso.appvinilos
 
+import BottomNavigation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,7 +13,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,9 +22,7 @@ import com.miso.appvinilos.albums.ui.theme.AppVinilosTheme
 import com.miso.appvinilos.albums.viewmodels.AlbumViewModel
 import android.util.Log
 import androidx.activity.viewModels
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -50,45 +48,16 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val navController = rememberNavController()
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController) }
+        bottomBar = { BottomNavigation(navController) }
     ) { innerPadding ->
-        NavHost(navController, startDestination = "home") {
+        NavHost(navController, startDestination = "home", Modifier.padding(innerPadding)) {
             composable("home") { HomeScreen() }
             composable("albums") { AlbumsScreen() }
-
+            // Configura las rutas adicionales aquí
         }
     }
 }
 
-@Composable
-fun BottomNavigationBar(navController: NavController) {
-    val items = listOf(
-        BottomNavItem("Home", Icons.Default.Home, "home"),
-        BottomNavItem("Albums", Icons.Default.Album, "albums"),
-        // Agrega aquí más elementos según necesites
-    )
-
-    BottomNavigation {
-        val currentRoute = currentRoute(navController)
-        items.forEach { item ->
-            BottomNavigationItem(
-                icon = { Icon(item.icon, contentDescription = item.title) },
-                label = { Text(item.title) },
-                selected = currentRoute == item.route,
-                onClick = {
-                    navController.navigate(item.route) {
-                        // Cuando se hace click, navegar a la ruta especificada
-                        navController.graph.startDestinationRoute?.let { route ->
-                            popUpTo(route) { saveState = true }
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }
-            )
-        }
-    }
-}
 
 @Composable
 fun NavigationGraph(navController: NavController) {
