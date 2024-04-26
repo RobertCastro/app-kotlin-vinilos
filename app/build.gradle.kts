@@ -86,4 +86,6 @@ dependencies {
     // Si estás usando StateFlow, también necesitarás:
     implementation("androidx.compose.runtime:runtime-rxjava2:<version>")
     // Asegúrate de usar las versiones correctas que sean compatibles con tu versión de Compose
+    val nav_version = "2.7.7"
+    implementation("androidx.navigation:navigation-compose:$nav_version")
 }

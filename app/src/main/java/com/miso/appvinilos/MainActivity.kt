@@ -1,41 +1,67 @@
 package com.miso.appvinilos
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.miso.appvinilos.albums.ui.AlbumList
 import com.miso.appvinilos.albums.ui.theme.AppVinilosTheme
 import com.miso.appvinilos.albums.viewmodels.AlbumViewModel
 
-//import androidx.lifecycle.viewmodel.compose.viewModels
-
 class MainActivity : ComponentActivity() {
-    private val viewModel: AlbumViewModel by viewModels()
-
-//    val albumPrueba = Album(1,"albumlbum1","cover1", "02/01/2024","Des","Gen1","recordlab1")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             AppVinilosTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-//                    Greeting(albumPrueba.name)
-                    AlbumScreen(viewModel)
-                }
+                MainScreen()
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainScreen() {
+    val navController = rememberNavController()
+    Scaffold(
+        topBar = {
+            SmallTopAppBar(
+                title = { Text("Vinilos App") },
+                actions = {
+                    Text(
+                        text = "Ver Álbumes",
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .clickable(onClick = { navController.navigate("albumList") }),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            )
+        }
+    ) { innerPadding ->
+        NavHost(navController, startDestination = "home", Modifier.padding(innerPadding)) {
+            composable("home") { Greeting("Welcome to Vinilos App") }
+            composable("albumList") { AlbumListScreen() }
         }
     }
 }
@@ -78,3 +104,8 @@ fun GreetingPreview() {
     }
 }
 
+@Composable
+fun AlbumListScreen(viewModel: AlbumViewModel = viewModel()) {
+    // Asumiendo que tienes un ViewModel listo con datos de álbumes
+    AlbumList(viewModel = viewModel)
+}
