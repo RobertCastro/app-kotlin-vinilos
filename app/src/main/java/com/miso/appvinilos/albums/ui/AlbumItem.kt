@@ -1,5 +1,6 @@
 package com.miso.appvinilos.albums.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +17,7 @@ import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun AlbumItem(album: Album) {
+    Log.d("AlbumItem", "AlbumItem: $album")
     AppVinilosTheme {
         Column(
             modifier = Modifier

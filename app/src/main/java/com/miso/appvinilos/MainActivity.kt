@@ -26,8 +26,12 @@ import androidx.navigation.compose.rememberNavController
 import com.miso.appvinilos.albums.ui.AlbumList
 import com.miso.appvinilos.albums.ui.theme.AppVinilosTheme
 import com.miso.appvinilos.albums.viewmodels.AlbumViewModel
+import android.util.Log
+import androidx.activity.viewModels
+
 
 class MainActivity : ComponentActivity() {
+    private val viewModel: AlbumViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -108,7 +112,7 @@ fun GreetingPreview() {
 
 @Composable
 fun AlbumListScreen() {
-    val viewModel = viewModel<AlbumViewModel>()
-    // Assuming you have a ViewModel ready with albums data
-    AlbumList(viewModel)  // Here the instance of the viewModel is passed directly
+    val viewModel: AlbumViewModel = viewModel()
+    Log.d("AlbumListScreen", "Fetched albums: $viewModel")
+    AlbumList(viewModel)
 }
