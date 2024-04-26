@@ -8,10 +8,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.miso.appvinilos.albums.model.Album
 import com.miso.appvinilos.albums.ui.theme.AppVinilosTheme
 import com.skydoves.landscapist.glide.GlideImage
+
 
 @Composable
 fun AlbumItem(album: Album) { // Cambiar Int por Album
@@ -22,7 +24,7 @@ fun AlbumItem(album: Album) { // Cambiar Int por Album
                 .fillMaxWidth()
         ) {
             GlideImage(
-                imageModel = { album.cover }, // Asegúrate de que cover es un String que representa la URL
+                imageModel = { album.cover },
                 modifier = Modifier.size(128.dp)
             )
             Text(text = album.name, style = MaterialTheme.typography.bodyLarge)
