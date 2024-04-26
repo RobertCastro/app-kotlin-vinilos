@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import com.miso.appvinilos.albums.viewmodels.AlbumViewModel
+import com.miso.appvinilos.albums.ui.theme.AppVinilosTheme
 
 class AlbumFragment : Fragment() {
 
