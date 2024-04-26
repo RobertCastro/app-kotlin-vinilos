@@ -17,19 +17,49 @@ import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun AlbumItem(album: Album) {
-    Log.d("AlbumItem", "AlbumItem: $album")
-    AppVinilosTheme {
-        Column(
+    Column(
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start,
+        modifier = Modifier
+            .align(Alignment.Top)
+            .fillMaxHeight()
+            .padding(top = 0.dp, bottom = 0.dp)
+            .width(176.dp)
+            .clipToBounds(),
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.placeholder_image), // Placeholder image
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
             modifier = Modifier
-                .padding(8.dp)
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp)),
+        )
+        Column(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp, vertical = 8.dp),
         ) {
-            GlideImage(
-                imageModel = { album.cover },
-                modifier = Modifier.size(128.dp)
+            Text(
+                text = album.name,
+                color = Color(0xff1b1c17),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Left,
+                overflow = TextOverflow.Ellipsis,
             )
-            Text(text = album.name, style = MaterialTheme.typography.bodyLarge)
-            Text(text = album.genre, style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = album.genre,
+                color = Color(0xff45483c),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Left,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
+}
+
 }
