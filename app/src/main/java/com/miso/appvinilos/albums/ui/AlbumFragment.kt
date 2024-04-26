@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import com.miso.appvinilos.albums.viewmodels.AlbumViewModel
 import com.miso.appvinilos.albums.ui.theme.AppVinilosTheme
+import com.miso.appvinilos.albums.ui.views.AlbumList
 
 class AlbumFragment : Fragment() {
 
@@ -18,7 +19,6 @@ class AlbumFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment using Compose
         return ComposeView(requireContext()).apply {
             setContent {
                 AppVinilosTheme {
@@ -30,7 +30,6 @@ class AlbumFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // You can call viewModel.fetchAlbums() here if your ViewModel does not do it automatically
         viewModel.fetchAlbums()
     }
 }

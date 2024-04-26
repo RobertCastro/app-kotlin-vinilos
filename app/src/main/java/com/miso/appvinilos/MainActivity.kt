@@ -23,7 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.miso.appvinilos.albums.ui.AlbumList
+import com.miso.appvinilos.albums.ui.views.AlbumList
 import com.miso.appvinilos.albums.ui.theme.AppVinilosTheme
 import com.miso.appvinilos.albums.viewmodels.AlbumViewModel
 import android.util.Log
@@ -118,22 +118,4 @@ fun AlbumListScreen() {
     }
     Log.d("AlbumListScreen", "Loading albums from ViewModel")
     AlbumList(viewModel)
-}
-
-@Composable
-fun AlbumTitlesScreen() {
-    val viewModel: AlbumViewModel = viewModel()
-    val albums by viewModel.albums.observeAsState(initial = listOf())
-
-    // Se asegura de cargar los datos cuando el composable es llamado
-    LaunchedEffect(key1 = true) {
-        viewModel.fetchAlbums()
-    }
-
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Álbumes Disponibles:")
-        albums.forEach { album ->
-            Text(text = album.name)
-        }
-    }
 }

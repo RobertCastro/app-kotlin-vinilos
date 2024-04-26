@@ -83,9 +83,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:<version>")
     implementation("com.github.skydoves:landscapist-glide:2.3.3")
     implementation("androidx.compose.runtime:runtime-livedata:<version>")
-    // Si estás usando StateFlow, también necesitarás:
     implementation("androidx.compose.runtime:runtime-rxjava2:<version>")
-    // Asegúrate de usar las versiones correctas que sean compatibles con tu versión de Compose
-    val nav_version = "2.7.7"
-    implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 }
