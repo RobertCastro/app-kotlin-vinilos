@@ -19,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -65,19 +64,13 @@ fun MainScreen() {
         }
     ) { innerPadding ->
         NavHost(navController, startDestination = "home", Modifier.padding(innerPadding)) {
-            composable("home") { Greeting("Welcome to Vinilos App") }
+            composable("home") { MainScreen() }
             composable("albumList") { AlbumListScreen() }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+
 
 @Composable
 fun AlbumScreen(viewModel: AlbumViewModel) {
@@ -101,14 +94,6 @@ fun AlbumScreen(viewModel: AlbumViewModel) {
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AppVinilosTheme {
-        Greeting("Android")
-    }
-}
-
 
 @Composable
 fun AlbumListScreen() {
@@ -116,24 +101,6 @@ fun AlbumListScreen() {
     LaunchedEffect(key1 = true) {
         viewModel.fetchAlbums()
     }
-    Log.d("AlbumListScreen", "Loading albums from ViewModel")
+    Log.d("AlbumListScreen", "Loading albums")
     AlbumList(viewModel)
-}
-
-@Composable
-fun AlbumTitlesScreen() {
-    val viewModel: AlbumViewModel = viewModel()
-    val albums by viewModel.albums.observeAsState(initial = listOf())
-
-    // Se asegura de cargar los datos cuando el composable es llamado
-    LaunchedEffect(key1 = true) {
-        viewModel.fetchAlbums()
-    }
-
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Álbumes Disponibles:")
-        albums.forEach { album ->
-            Text(text = album.name)
-        }
-    }
 }
