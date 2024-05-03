@@ -1,106 +1,220 @@
 package com.miso.appvinilos
-
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallTopAppBar
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.miso.appvinilos.albums.ui.theme.AppVinilosTheme
+import com.miso.appvinilos.albums.ui.views.AlbumCompleteDetail
 import com.miso.appvinilos.albums.ui.views.AlbumList
 import com.miso.appvinilos.albums.viewmodels.AlbumViewModel
-
+import com.miso.appvinilos.data.model.Album
+import com.miso.appvinilos.presentacion.ui.views.artistlist.ArtistListScreen
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: AlbumViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
+            val navController = rememberNavController()
             AppVinilosTheme {
-                AlbumListScreen()
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    MainScreen(navController = navController)
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
-    val navController = rememberNavController()
+fun MainScreen(
+    navController: NavHostController
+) {
     Scaffold(
-        topBar = {
-            SmallTopAppBar(
-                title = { Text("Vinilos App") },
-                actions = {
-                    Text(
-                        text = "Ver Álbumes",
-                        modifier = Modifier
-                            .padding(horizontal = 1.dp)
-                            .clickable(onClick = { navController.navigate("albumList") }),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = MaterialTheme.colorScheme.onSurface
+        bottomBar = {
+            BottomAppBar(modifier = Modifier) {
+                BottomNavigationBar(navController = navController)
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {}) {
+                Icon(Icons.Filled.Add, "Add")
+            }
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier.padding(
+                PaddingValues(
+                    0.dp,
+                    0.dp,
+                    0.dp,
+                    innerPadding.calculateBottomPadding()
+                )
+            )
+        ) {
+            Navigations(navController = navController)
+        }
+    }
+}
+
+sealed class NavigationItem(var route: String, val title: String, val icon: Int) {
+    object Albums : NavigationItem("Albums", "Albums", R.drawable.ic_album)
+    object Artist : NavigationItem("Artist", "Artist", R.drawable.ic_artist)
+    object Collector : NavigationItem("Collector", "Collector", R.drawable.ic_collector)
+    object Home : NavigationItem("Home", "Home", R.drawable.ic_home)
+}
+
+
+@Composable
+fun BottomNavigationBar(navController: NavController) {
+    val items = listOf(
+        NavigationItem.Albums,
+        NavigationItem.Artist,
+        NavigationItem.Collector,
+        NavigationItem.Home
+    )
+    var selectedItem by remember { mutableIntStateOf(0) }
+    var currentRoute by remember { mutableStateOf(NavigationItem.Albums.route) }
+
+    items.forEachIndexed { index, navigationItem ->
+        if (navigationItem.route == currentRoute) {
+            selectedItem = index
+        }
+    }
+
+    NavigationBar {
+        items.forEachIndexed { index, item ->
+            NavigationBarItem(
+                alwaysShowLabel = true,
+                icon = {
+                    val imagePainter = painterResource(id = item.icon)
+                    Image(
+                        painter = imagePainter,
+                        contentDescription = null // Provide content description if needed
                     )
+                },
+                label = { Text(item.title) },
+                selected = selectedItem == index,
+                onClick = {
+                    selectedItem = index
+                    currentRoute = item.route
+                    navController.navigate(item.route) {
+                        navController.graph.startDestinationRoute?.let { route ->
+                            popUpTo(route) {
+                                saveState = true
+                            }
+                        }
+                        var launchSingleTop = true
+                        var restoreState = true
+                    }
                 }
             )
         }
-    ) { innerPadding ->
-        NavHost(navController, startDestination = "home", Modifier.padding(innerPadding)) {
-            composable("home") { MainScreen() }
-            composable("albumList") { AlbumListScreen() }
+    }
+}
+
+@Composable
+fun Navigations(navController: NavHostController) {
+    NavHost(navController, startDestination = NavigationItem.Albums.route) {
+        composable(NavigationItem.Albums.route) {
+            AlbumListScreen(navController)}
+            composable("AlbumCompleteDetail/{albumId}"){ backStackEntry ->
+
+                val albumId=backStackEntry.arguments?.getString("albumId")
+                val albumIdInt= albumId?.toInt()?:0
+
+                AlbumCompleteDetail(albumIdInt, navController)
         }
+        composable(NavigationItem.Artist.route) {
+            ArtistListScreen(navController)
+        }
+        composable(NavigationItem.Collector.route) {
+            CollectorScreen(navController)
+        }
+        composable(NavigationItem.Home.route) {
+            HomeScreen(navController)
+        }
+    }
+}
+
+@Composable
+fun CenterText(text: String) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = text, fontSize = 32.sp)
     }
 }
 
 
 
 @Composable
-fun AlbumScreen(viewModel: AlbumViewModel) {
-    val album by viewModel.album.observeAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.fetchAlbum(1)
-    }
-
-    Column {
-        if (album == null) {
-            // Show loading indicator or placeholder
-            Text(text = "Loading...")
-        } else {
-            // Display the credit card details
-//            Text(text = album?.albumId ?: "Unknown")
-            Text(text = album?.name ?: "Unknown")
-            Text(text = album?.description ?: "Unknown")
-        }
-    }
-
+fun CollectorScreen(navigationController: NavHostController) {
+    CenterText(text = "Collectors")
 }
 
+@Composable
+fun HomeScreen(navigationController: NavHostController) {
+    CenterText(text = "Home")
+}
 
 @Composable
-fun AlbumListScreen() {
+fun AlbumListScreen(navigationController: NavHostController,albumsTest:List<Album> = emptyList()) {
+
     val viewModel: AlbumViewModel = viewModel()
-    LaunchedEffect(key1 = true) {
-        viewModel.fetchAlbums()
+
+    if (albumsTest.isNotEmpty()) {
+        LaunchedEffect(key1 = true) {
+            viewModel.fetchAlbums(albumsTest)
+        }
     }
+    else {
+        LaunchedEffect(key1 = true) {
+            viewModel.fetchAlbums()
+        }
+    }
+
+
     Log.d("AlbumListScreen", "Loading albums")
-    AlbumList(viewModel)
+    AlbumList(viewModel,navigationController)
 }
