@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.miso.appvinilos.presentacion.viewmodels.CollectorViewModel
+import com.miso.appvinilos.collectors.viewmodels.CollectorViewModel
 
 @Composable
 fun CollectorList(viewModel: CollectorViewModel, navigationController: NavHostController) {
