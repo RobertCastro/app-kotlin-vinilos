@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,8 +47,11 @@ import com.miso.appvinilos.albums.viewmodels.AlbumViewModel
 import com.miso.appvinilos.collectors.ui.views.CollectorList
 import com.miso.appvinilos.collectors.viewmodels.CollectorViewModel
 import com.miso.appvinilos.data.model.Album
+import com.miso.appvinilos.data.model.Artist
+import com.miso.appvinilos.presentacion.ui.views.artistdetail.ArtistCompleteDetail
 import com.miso.appvinilos.data.model.Collector
 import com.miso.appvinilos.presentacion.ui.views.artistlist.ArtistListScreen
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +73,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    albumsTest: List<Album> = emptyList(),
+    artistsTest: List<Artist> = emptyList(),
+    collectorsTest: List<Collector> = emptyList()
 ) {
     Scaffold(
         bottomBar = {
@@ -93,7 +100,10 @@ fun MainScreen(
                 )
             )
         ) {
-            Navigations(navController = navController)
+            Navigations(navController = navController,
+                        albumsTest = albumsTest,
+                        artistsTest = artistsTest,
+                        collectorsTest = collectorsTest)
         }
     }
 }
@@ -115,7 +125,7 @@ fun BottomNavigationBar(navController: NavController) {
         NavigationItem.Home
     )
     var selectedItem by remember { mutableIntStateOf(0) }
-    var currentRoute by remember { mutableStateOf(NavigationItem.Albums.route) }
+    var currentRoute by remember { mutableStateOf(NavigationItem.Home.route) }
 
     items.forEachIndexed { index, navigationItem ->
         if (navigationItem.route == currentRoute) {
@@ -127,6 +137,7 @@ fun BottomNavigationBar(navController: NavController) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 alwaysShowLabel = true,
+                modifier = Modifier.testTag(item.title),
                 icon = {
                     val imagePainter = painterResource(id = item.icon)
                     Image(
@@ -135,7 +146,8 @@ fun BottomNavigationBar(navController: NavController) {
                     )
                 },
                 label = { Text(item.title) },
-                selected = selectedItem == index,
+                //selected = selectedItem == index,
+                selected = false,
                 onClick = {
                     selectedItem = index
                     currentRoute = item.route
@@ -155,22 +167,32 @@ fun BottomNavigationBar(navController: NavController) {
 }
 
 @Composable
-fun Navigations(navController: NavHostController) {
-    NavHost(navController, startDestination = NavigationItem.Albums.route) {
+fun Navigations(navController: NavHostController,
+                albumsTest: List<Album> = emptyList(),
+                artistsTest: List<Artist> = emptyList(),
+                collectorsTest: List<Collector> = emptyList()
+                ) {
+    NavHost(navController, startDestination = NavigationItem.Home.route) {
         composable(NavigationItem.Albums.route) {
-            AlbumListScreen(navController)}
+            AlbumListScreen(navController,albumsTest=albumsTest)}
             composable("AlbumCompleteDetail/{albumId}"){ backStackEntry ->
 
                 val albumId=backStackEntry.arguments?.getString("albumId")
                 val albumIdInt= albumId?.toInt()?:0
 
-                AlbumCompleteDetail(albumIdInt, navController)
+                AlbumCompleteDetail(albumIdInt, navController,albumsTest=albumsTest)
         }
         composable(NavigationItem.Artist.route) {
-            ArtistListScreen(navController)
+            ArtistListScreen(navController,artistTest=artistsTest)}
+            composable("ArtistCompleteDetail/{artistId}"){ backStackEntry ->
+
+                val artistId=backStackEntry.arguments?.getString("artistId")
+                val artistIdInt= artistId?.toInt()?:0
+
+                ArtistCompleteDetail(artistIdInt, navController,artistTest=artistsTest)
         }
         composable(NavigationItem.Collector.route) {
-            CollectorListScreen(navController)
+            CollectorListScreen(navController,collectorsTest=collectorsTest)
         }
         composable(NavigationItem.Home.route) {
             HomeScreen(navController)

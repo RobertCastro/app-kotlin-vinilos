@@ -21,7 +21,7 @@ fun CollectorList(viewModel: CollectorViewModel, navigationController: NavHostCo
     val collectors by viewModel.collectors.observeAsState(initial = listOf())
 
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Fixed(1),
         contentPadding = PaddingValues(16.dp),
         content = {
             items(collectors) { collector ->
