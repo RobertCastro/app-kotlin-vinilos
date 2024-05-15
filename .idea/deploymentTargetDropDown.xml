@@ -2,35 +2,32 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="E2ETests">
+        <State />
+      </entry>
       <entry key="Tests in 'com.miso.appvinilos'">
+        <State />
+      </entry>
+      <entry key="Tests in 'com.miso.appvinilos.pruebasunitarias'">
         <State />
       </entry>
       <entry key="app">
         <State>
-          <targetSelectedWithDropDown>
+          <runningDeviceTargetSelectedWithDropDown>
             <Target>
-              <type value="QUICK_BOOT_TARGET" />
+              <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\dagam\.android\avd\Pixel_6_API_34.avd" />
+                  <value value="C:\Users\dagam\.android\avd\Pixel_3_API_VanillaIceCream.avd" />
                 </Key>
               </deviceKey>
             </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-05-08T23:32:06.550724500Z" />
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-05-15T00:42:29.597587300Z" />
         </State>
       </entry>
-      <entry key="test_6_uso_album_uso_artista()">
-        <State />
-      </entry>
-      <entry key="test_7_uso_completo_app()">
-        <State />
-      </entry>
-      <entry key="test_8_revision_stack_desde_album()">
-        <State />
-      </entry>
-      <entry key="test_8_revision_stack_desde_artista()">
+      <entry key="pantalla_albums_muestra_correctamente_6_albums() (1)">
         <State />
       </entry>
     </value>
