@@ -43,7 +43,7 @@ fun AlbumCreate(viewModel: AlbumViewModel) {
     ) {
 
         Text(
-            text = "Hola",
+            text = "",
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.displaySmall
         )
@@ -103,7 +103,9 @@ fun AlbumCreate(viewModel: AlbumViewModel) {
         val album = Album(
             name =name, cover =cover,
             releaseDate = "1984-08-01T00:00:00-05:00", description =description,
-            genre =genre, recordLabel =recordLabel)
+            genre =genre, recordLabel =recordLabel,
+            comments = emptyList()
+        )
         Log.d("Album", "Album: $album")
         Button(onClick = { viewModel.createAlbum(album) }) { Text("Create Album") }
     }
