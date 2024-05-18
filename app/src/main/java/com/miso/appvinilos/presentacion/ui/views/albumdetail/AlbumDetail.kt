@@ -129,8 +129,9 @@ fun CommentList(comments: List<Comment>) {
 
 @Composable
 fun AlbumBasicDetail(album: Album, navigationController: NavHostController){
-    Header(text="Álbum",navigationController = navigationController)
+
     Column {
+        Header(text="Álbum",navigationController = navigationController)
         AlbumDetail(album)
         AlbumDescription(album)
     }
