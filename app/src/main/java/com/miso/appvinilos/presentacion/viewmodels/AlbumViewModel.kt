@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.miso.appvinilos.data.model.Album
 import com.miso.appvinilos.data.model.Comment
+import com.miso.appvinilos.data.model.CommentRequest
 import com.miso.appvinilos.data.repositories.AlbumRepository
 import kotlinx.coroutines.launch
 
@@ -95,14 +96,18 @@ class AlbumViewModel(application: Application) :  AndroidViewModel(application) 
         }
     }
 
-    fun postComment(albumId: Int, comment: Comment) {
+    fun postComment(albumId: Int, commentRequest: CommentRequest) {
         viewModelScope.launch {
             try {
-                albumRepository.postComment(albumId, comment)
-                fetchComments(albumId)
+                Log.d("AlbumViewModel", "Posting comment: $commentRequest to albumId: $albumId")
+                val response = albumRepository.postComment(albumId, commentRequest)
+                _postCommentResponse.value = response
+                fetchComments(albumId) // Refresh comments after posting a new one
             } catch (e: Exception) {
                 e.printStackTrace()
+                Log.e("AlbumViewModel", "Error posting comment", e)
             }
         }
     }
+
 }
