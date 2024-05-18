@@ -1,7 +1,5 @@
 package com.miso.appvinilos.presentacion.ui.views.albumdetail
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,11 +33,12 @@ import com.miso.appvinilos.data.model.Comment
 import com.miso.appvinilos.presentacion.ui.views.utils.Header
 import com.miso.appvinilos.presentacion.viewmodels.AlbumViewModel
 import com.skydoves.landscapist.glide.GlideImage
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun AlbumCompleteDetail(albumId: Int, navigationController: NavHostController,albumsTest:List<Album> = emptyList()) {
     val viewModel: AlbumViewModel = viewModel()
-
 
     val initialAlbum = Album(0, albumId.toString(), "cover", "releaseDate",
         "descr","genre","record lab", emptyList())
@@ -57,22 +57,26 @@ fun AlbumCompleteDetail(albumId: Int, navigationController: NavHostController,al
         AlbumBasicDetail(albumTest, navigationController)
     }
     else{
-        Column {
+
+        Column(modifier = Modifier.padding(16.dp) ) {
             AlbumBasicDetail(albumToShow, navigationController)
             CommentList(comments)
-            Button(onClick = { navigationController.navigate("AddComment/$albumId") }) {
-                Text("Add Comment")
+            Button(
+                onClick = { navigationController.navigate("AddComment/$albumId") },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF5352ED),
+                    contentColor = Color.White
+                ),
+            ) {
+                Text("+ Agregar")
             }
         }
     }
-
-
-
 }
 
 @Composable
 fun CommentList(comments: List<Comment>) {
-    Column {
+    Column( modifier = Modifier.padding(6.dp)) {
         comments.forEach { comment ->
             Text(text = comment.description)
         }
@@ -81,20 +85,12 @@ fun CommentList(comments: List<Comment>) {
 
 @Composable
 fun AlbumBasicDetail(album: Album, navigationController: NavHostController){
+    Header(text="Álbum",navigationController = navigationController)
     Column {
-        Header(text="Álbum",navigationController = navigationController)
         AlbumDetail(album)
         AlbumDescription(album)
     }
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -104,17 +100,13 @@ fun AlbumPhotoScreen(cover: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth(0.80f)
-            .background(
-                color = Color.White,
-            )
             .padding(1.dp)
     ) {
 
         GlideImage(
             imageModel = { cover },
-
             modifier = Modifier
-                .height(185.dp)
+                .height(170.dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
         )
@@ -200,15 +192,7 @@ fun GenreScreenField(album: Album){
 @Composable
 fun AlbumDetail(album: Album) {
     Surface(
-        color = Color.White,
         modifier = Modifier
-            .border(
-                width = 1.dp,
-                color = Color.White
-            )
-            .background(
-                color = Color.White,
-            )
             .padding(5.dp)
     ) {
         Row(
@@ -241,15 +225,7 @@ fun AlbumDetail(album: Album) {
 @Composable
 fun AlbumDescription(album: Album) {
     Surface(
-        color = Color.White,
         modifier = Modifier
-            .border(
-                width = 1.dp,
-                color = Color.White
-            )
-            .background(
-                color = Color.White,
-            )
             .padding(5.dp)
     ) {
         Column {
@@ -277,4 +253,14 @@ fun CustomWhiteSpace(){
             horizontalAlignment = Alignment.Start,
         ) {}
     }
+}
+
+data class Album(
+    val releaseDate: String
+)
+fun formatDate(dateString: String): String {
+    val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    val outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val date = LocalDate.parse(dateString, inputFormatter)
+    return date.format(outputFormatter)
 }

@@ -95,5 +95,9 @@ dependencies {
     implementation(libs.androidx.navigation.navigation.compose)
     implementation(libs.coil.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx.v261)
+    implementation(libs.androidx.navigation.navigation.compose)
+    implementation(libs.coil.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v261)
+    implementation(libs.threetenabp)
 
 }

@@ -10,6 +10,7 @@ import com.miso.appvinilos.data.model.Comment
 import com.miso.appvinilos.data.model.CommentRequest
 import com.miso.appvinilos.data.repositories.AlbumRepository
 import kotlinx.coroutines.launch
+import retrofit2.Response
 
 class AlbumViewModel(application: Application) :  AndroidViewModel(application) {
     private val albumRepository = AlbumRepository(application.applicationContext)
@@ -20,6 +21,10 @@ class AlbumViewModel(application: Application) :  AndroidViewModel(application) 
     private val _album = MutableLiveData<Album>()
     val album: LiveData<Album>
         get() = _album
+
+    private val _postCommentResponse = MutableLiveData<Response<Comment>>()
+    val postCommentResponse: LiveData<Response<Comment>> get() = _postCommentResponse
+
 
     fun fetchAlbums(albumsTest:List<Album> = emptyList()){
         viewModelScope.launch {
@@ -109,5 +114,6 @@ class AlbumViewModel(application: Application) :  AndroidViewModel(application) 
             }
         }
     }
+
 
 }
