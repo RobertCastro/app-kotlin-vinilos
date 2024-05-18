@@ -7,9 +7,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +41,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
 
 @Composable
 fun AlbumCompleteDetail(albumId: Int, navigationController: NavHostController,albumsTest:List<Album> = emptyList()) {
@@ -95,9 +100,29 @@ fun AlbumCompleteDetail(albumId: Int, navigationController: NavHostController,al
 
 @Composable
 fun CommentList(comments: List<Comment>) {
-    Column( modifier = Modifier.padding(6.dp)) {
+    Column(modifier = Modifier.padding(6.dp)) {
         comments.forEach { comment ->
-            Text(text = comment.description)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = comment.description)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = comment.rating.toString(),
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "Rating Star",
+                        tint = Color.Black,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -288,3 +313,10 @@ fun formatDate(dateString: String): String {
     val date: Date = inputFormatter.parse(dateString)
     return outputFormatter.format(date)
 }
+
+data class Comment(
+    val description: String,
+    val rating: Int
+)
+
+
