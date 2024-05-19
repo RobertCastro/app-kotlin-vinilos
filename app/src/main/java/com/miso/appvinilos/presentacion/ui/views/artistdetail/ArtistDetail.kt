@@ -1,30 +1,38 @@
 package com.miso.appvinilos.presentacion.ui.views.artistdetail
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeightIn
-import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -33,6 +41,10 @@ import com.miso.appvinilos.data.model.Artist
 import com.miso.appvinilos.presentacion.ui.views.utils.Header
 import com.miso.appvinilos.presentacion.viewmodels.ArtistViewModel
 import com.skydoves.landscapist.glide.GlideImage
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 @Composable
@@ -59,6 +71,7 @@ fun ArtistCompleteDetail(artistId: Int, navigationController: NavHostController,
 
 @Composable
 fun ArtistBasicDetail(artist: Artist, navigationController: NavHostController){
+
     Column(modifier = Modifier.padding(5.dp)) {
         Header(text="Artista", navigationController)
         Spacer(modifier = Modifier.height(8.dp))
@@ -67,8 +80,15 @@ fun ArtistBasicDetail(artist: Artist, navigationController: NavHostController){
         TitleText(text = artist.name)
         Spacer(modifier = Modifier.height(15.dp))
         Row {
+            val formattedDate = try {
+                formatDate(artist.birthDate)
+            } catch (e: ParseException) {
+                artist.birthDate
+            }
+
+            Spacer(modifier = Modifier.padding(8.dp, 0.dp, 16.dp, 0.dp))
             DarkText(text = "Nacimiento: ")
-            LightText(text = artist.birthDate)
+            LightText(text = formattedDate)
         }
         Spacer(modifier = Modifier.height(15.dp))
         CustomParagraph(text = artist.description)
@@ -76,29 +96,66 @@ fun ArtistBasicDetail(artist: Artist, navigationController: NavHostController){
 }
 
 
+@Composable
+fun TopBar(navigationController: NavHostController) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(15.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        IconButton(
+            onClick = { navigationController.popBackStack()},
+            modifier = Modifier.testTag("backButton")
+                .semantics {
+                    stateDescription = "Este boton permite ir atras cuando es cliqueado."
+                })
+        {
+            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Boton para volver al listado de artistas")
+        }
+        Title()
+    }
+}
 
 
-
+@Preview
+@Composable
+fun Title() {
+    Text(
+        text = "Artista",
+        style = TextStyle(
+            color = Color(0xFF1B1C17),
+            textAlign = TextAlign.Start,
+            fontSize = 22.sp,
+            lineHeight = 28.sp,
+            fontWeight = FontWeight(400),
+        ),
+        modifier = Modifier.fillMaxWidth(0.8f).semantics {
+            heading()
+        }
+    )
+}
 
 
 @Composable
 fun ArtistPhotoScreen(cover: String) {
     Box(
         modifier = Modifier
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(8.dp)
-            )
             .padding(3.dp)
-            .aspectRatio(14f/8f) // Maintain aspect ratio 16:9
-            .requiredWidthIn(max = 230.dp) // Set maximum width
-            .requiredHeightIn(max = 200.dp) // Set maximum height
+            .fillMaxWidth()
+            .height(200.dp)
     ) {
         GlideImage(
             imageModel = { cover },
             modifier = Modifier
-                .fillMaxSize() // Ensure the image fills the Box
+                .fillMaxSize()
                 .clip(shape = RoundedCornerShape(8.dp))
+                .semantics {
+                    contentDescription = "Foto del artista"
+                }
         )
     }
 }
@@ -123,12 +180,13 @@ fun TitleText(text: String){
     Text(
         text = text,
         style = TextStyle(
-            fontSize = 18.sp,
+            fontSize = 24.sp,
             textAlign = TextAlign.Center,
             lineHeight = 24.sp,
             fontFamily = FontFamily.Serif,
-            fontWeight = FontWeight(300),
-            color = Color(0xFF605D66),
+            fontWeight = FontWeight(700),
+            color = Color(0xFF1B1C17),
+
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -155,6 +213,7 @@ fun DarkText(text: String){
 @Composable
 fun CustomParagraph(text: String) {
     Text(
+        modifier = Modifier.padding(16.dp),
         text = text,
         style = TextStyle(
             fontSize = 16.sp,
@@ -164,4 +223,11 @@ fun CustomParagraph(text: String) {
             letterSpacing = 0.4.sp,
         )
     )
+}
+
+fun formatDate(dateString: String): String {
+    val inputFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+    val outputFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val date: Date = inputFormatter.parse(dateString)
+    return outputFormatter.format(date)
 }
