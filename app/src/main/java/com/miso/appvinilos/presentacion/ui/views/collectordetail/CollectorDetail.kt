@@ -1,5 +1,7 @@
 package com.miso.appvinilos.presentacion.ui.views.collectordetail
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,7 +23,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,10 +35,11 @@ import com.miso.appvinilos.presentacion.ui.views.utils.Header
 import com.miso.appvinilos.presentacion.viewmodels.CollectorViewModel
 
 
+@RequiresApi(Build.VERSION_CODES.M)
 @Composable
 fun CollectorCompleteDetail(collectorId: Int,
                             navigationController: NavHostController,
-                            collectorTest:Collector = Collector(),
+                            collectorsTest:List<Collector> = emptyList(),
                             collectorAlbumsTest:List<Album> = emptyList()
 
 ) {
@@ -59,7 +60,8 @@ fun CollectorCompleteDetail(collectorId: Int,
     val initialColeccionista = Collector(0, "Nombre", "telefono", "email", emptyList(), emptyList(), emptyList())
     val coleccionista by viewModel.collector.observeAsState(initial = initialColeccionista)
 
-    if(collectorTest.id != 0 && collectorAlbumsTest.isNotEmpty()){
+    if(collectorsTest.isNotEmpty() && collectorAlbumsTest.isNotEmpty()){
+        val collectorTest:Collector = collectorsTest[collectorId-1]
         CollectorBasicDetail(collectorTest,collectorAlbumsTest, navigationController)
     }
     else{
@@ -73,12 +75,12 @@ fun CollectorBasicDetail(coleccionista:Collector,collectorAlbums: List<Album>, n
         Header(text="Coleccionista",navigationController)
         NombreColeccionista(coleccionista.name)
         SubtituloDetalleColeccionista( "Albumes favoritos")
-        CollectorAlbums(collectorAlbums, navigationController)
+        CollectorAlbums(collectorAlbums)
     }
 }
 
 @Composable
-fun CollectorAlbums(collectorAlbums: List<Album>, navigationController: NavHostController){
+fun CollectorAlbums(collectorAlbums: List<Album>){
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(16.dp),

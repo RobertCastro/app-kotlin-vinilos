@@ -1,11 +1,12 @@
 package com.miso.appvinilos
 
-
-import AddCommentScreen
+import com.miso.appvinilos.presentacion.ui.views.albumdetail.AddCommentScreen
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +37,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -57,10 +62,12 @@ import com.miso.appvinilos.presentacion.ui.views.collectordetail.CollectorComple
 import com.miso.appvinilos.presentacion.ui.views.collectorlist.CollectorList
 import com.miso.appvinilos.presentacion.viewmodels.AlbumViewModel
 import com.miso.appvinilos.presentacion.viewmodels.CollectorViewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 
 class MainActivity : ComponentActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -81,6 +88,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreen(
     navController: NavHostController,
@@ -88,6 +96,10 @@ fun MainScreen(
     artistsTest: List<Artist> = emptyList(),
     collectorsTest: List<Collector> = emptyList()
 ) {
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val route = backStackEntry?.destination?.route
+    Log.d("CURRENT_ROUTE", "Ruta $backStackEntry")
+    Log.d("CURRENT_ROUTE", "Ruta $route")
     Scaffold(
         bottomBar = {
             BottomAppBar(modifier = Modifier) {
@@ -95,10 +107,12 @@ fun MainScreen(
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                navController.navigate("createAlbum")
-            }) {
-                Icon(Icons.Filled.Add, "Add")
+            if (route == "Albums") {
+                FloatingActionButton(onClick = { navController.navigate("createAlbum") }, modifier = Modifier.semantics {
+                    stateDescription = "Este boton agrega un nuevo elemento en la lista de datos"
+                }) {
+                    Icon(Icons.Filled.Add, "Add")
+                }
             }
         }
     ) { innerPadding ->
@@ -122,11 +136,13 @@ fun MainScreen(
     }
 }
 
-sealed class NavigationItem(var route: String, val title: String, val icon: Int) {
-    data object Albums : NavigationItem("Albums", "Albums", R.drawable.ic_album)
-    data object Artist : NavigationItem("Artist", "Artist", R.drawable.ic_artist)
-    data object Collector : NavigationItem("Collector", "Collector", R.drawable.ic_collector)
-    data object Home : NavigationItem("Home", "Home", R.drawable.ic_home)
+
+sealed class NavigationItem(val route: String, val title: String, val contentDescription: String?, val icon: Int) {
+
+    data object Albums : NavigationItem("Albums", "Albums", "Navigate to Albums", R.drawable.ic_album)  // No constructor needed
+    data object Artist : NavigationItem("Artist", "Artist", "Navigate to Artists", R.drawable.ic_artist)
+    data object Collector : NavigationItem("Collector", "Collector", "Navigate to Collector", R.drawable.ic_collector)
+    data object Home : NavigationItem("Home", "Home", "Navigate to Home", R.drawable.ic_home)
 }
 
 
@@ -151,12 +167,13 @@ fun BottomNavigationBar(navController: NavController) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 alwaysShowLabel = true,
-                modifier = Modifier.testTag(item.title),
+                modifier = Modifier.testTag(item.title)
+                    .semantics { contentDescription = item.contentDescription.toString() },
                 icon = {
                     val imagePainter = painterResource(id = item.icon)
                     Image(
                         painter = imagePainter,
-                        contentDescription = null // Provide content description if needed
+                        contentDescription = "Icono para la opción de menu " + item.title
                     )
                 },
                 label = { Text(item.title) },
@@ -171,8 +188,6 @@ fun BottomNavigationBar(navController: NavController) {
                                 saveState = true
                             }
                         }
-                        var launchSingleTop = true
-                        var restoreState = true
                     }
                 }
             )
@@ -180,6 +195,7 @@ fun BottomNavigationBar(navController: NavController) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Navigations(
     navController: NavHostController,
@@ -216,8 +232,7 @@ fun Navigations(
 
             val collectorId = backStackEntry.arguments?.getString("collectorId")
             val collectorIdInt = collectorId?.toInt() ?: 0
-
-            CollectorCompleteDetail(collectorIdInt, navController)
+            CollectorCompleteDetail(collectorIdInt, navController,collectorsTest = collectorsTest,collectorAlbumsTest = albumsTest)
         }
         
         composable(NavigationItem.Home.route) {
@@ -230,35 +245,44 @@ fun Navigations(
             val albumId = backStackEntry.arguments?.getString("albumId")?.toInt() ?: 0
             AddCommentScreen(albumId = albumId, navigationController = navController)
         }
-
     }
 }
 
 @Composable
 fun CenterText(text: String) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().semantics(mergeDescendants = true){},
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = text, fontSize = 32.sp)
+        Text(
+            text = text,
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.semantics {
+                heading()
+            }.semantics {
+                contentDescription = "Texto de bienvenida"
+            },
+            fontSize = 32.sp
+        )
     }
 }
 
 
 @Composable
 fun HomeScreen() {
-    CenterText(text = "Home")
+    CenterText(text = "Bienvenido")
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CreateAlbumScreen(navController: NavHostController) {
     val viewModel: AlbumViewModel = viewModel()
-    AlbumCreate(viewModel)
-    // Your CreateAlbumScreen content here
+    AlbumCreate(viewModel, navController)
 }
 
+@RequiresApi(Build.VERSION_CODES.M)
 @Composable
 fun AlbumListScreen(
     navigationController: NavHostController,
@@ -282,6 +306,7 @@ fun AlbumListScreen(
     AlbumList(viewModel, navigationController)
 }
 
+@RequiresApi(Build.VERSION_CODES.M)
 @Composable
 fun CollectorListScreen(
     navigationController: NavHostController,
